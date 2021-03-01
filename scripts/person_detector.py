@@ -11,7 +11,6 @@ import sys
 import message_filters
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-from common import mur_common
 
 class GRMI_detector():
     def __init__(self):
