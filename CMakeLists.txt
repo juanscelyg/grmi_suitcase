@@ -10,7 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   nav_msgs
   visualization_msgs
-  dynamic_reconfigure)
+  dynamic_reconfigure
+  cv_bridge)
 
 
 generate_messages(
@@ -18,6 +19,8 @@ generate_messages(
   std_msgs
   geometry_msgs
 )
+
+catkin_package(INCLUDE_DIRS DEPENDS OpenCV)
 
 catkin_install_python(PROGRAMS  scripts/person_detector.py
                         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

@@ -15,8 +15,8 @@ from sensor_msgs.msg import Image
 class GRMI_detector():
     def __init__(self):
         self.yolo_path = rospy.get_param('/person_detector/yolo_path')
-        self.weightsPath = os.path.sep.join([self.yolo_path, "yolov3.weights"])
-        self.configPath = os.path.sep.join([self.yolo_path, "yolov3.cfg"])
+        self.weightsPath = os.path.sep.join([self.yolo_path, "yolov3-tiny.weights"])
+        self.configPath = os.path.sep.join([self.yolo_path, "yolov3-tiny.cfg"])
         self.labelsPath = os.path.sep.join([self.yolo_path, "coco.names"])
         self.confidence = 0.5
         self.threshold = 0.3
