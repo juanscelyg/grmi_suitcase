@@ -11,11 +11,18 @@ import RPi.GPIO as GPIO
 
 class GRMI_motors():
     def __init__(self):
+        # MODEL
+        self.power_gain = 0.1
+        self.speed_gain = 0.1
+        self.omega_gain = 0.1
+        self.speed = 0.0
+        self.omega = 0.0
+
         # GPIO Config
-        self.pin_motor_r = 32 #BCM12
-        self.pin_motor_l = 33 #BCM13
+        self.pin_motor_r = 12 #Board32
+        self.pin_motor_l = 13 #Board33
         self.pwm_frequency = 500
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin_motor_r, GPIO.OUT)
         GPIO.setup(self.pin_motor_l, GPIO.OUT)
         self.pwm_motor_r = GPIO.PWM(self.pin_motor_r, self.pwm_frequency)
@@ -24,16 +31,6 @@ class GRMI_motors():
         self.pwm_motor_l.start(self.vel2cycle(0,'l'))
         rospy.loginfo(" Init Motors")
         time.sleep(1)
-
-        # MODEL
-        self.power_gain = 0.1
-        self.speed_gain = 0.1
-        self.omega_gain = 0.1
-        self.speed = 0.0
-        self.omega = 0.0
-
-        # ROS TIMER
-        self.mytime = 0.75
 
         # ROS INFRAESTRUCRE
         self.error_sub = rospy.Publisher("/error_pose",Pose2D, self.callback)
@@ -60,7 +57,6 @@ if __name__ == '__main__':
     rospy.init_node('motors_control')
     try:
         node = GRMI_motors()
-        rospy.Timer(rospy.Duration(node.mytime), node.detect)
         rate = rospy.Rate(10)
         rospy.spin()
     except rospy.ROSInterruptException:
