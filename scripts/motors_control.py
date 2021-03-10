@@ -12,9 +12,9 @@ import RPi.GPIO as GPIO
 class GRMI_motors():
     def __init__(self):
         # MODEL
-        self.power_gain = 0.1
-        self.speed_gain = 0.1
-        self.omega_gain = 0.1
+        self.power_gain = rospy.get_param('/motors_control/power_gain')
+        self.speed_gain = rospy.get_param('/motors_control/speed_gain')
+        self.omega_gain = rospy.get_param('/motors_control/omega_gain')
         self.speed = 0.0
         self.omega = 0.0
 
@@ -33,7 +33,7 @@ class GRMI_motors():
         time.sleep(1)
 
         # ROS INFRAESTRUCRE
-        self.error_sub = rospy.Publisher("/error_pose",Pose2D, self.callback)
+        self.error_sub = rospy.Subscriber("/error_pose", Pose2D, self.callback)
 
     def vel2cycle(self,vel,mode):
         slope = 50.0
@@ -48,7 +48,7 @@ class GRMI_motors():
     def callback(self, msg_error):
         vel_r = self.speed_gain*msg_error.x + self.omega_gain*msg_error.theta
         vel_l = self.speed_gain*msg_error.x - self.omega_gain*msg_error.theta
-        rospy.loginfo("vel_l: {} vel_r:{}".format(vel_l, vel_r))
+        rospy.loginfo("vel_l: {:.4f} vel_r:{:.4f}".format(vel_l, vel_r))
         self.pwm_motor_r.ChangeDutyCycle(self.vel2cycle(vel_r,'r'))
         self.pwm_motor_l.ChangeDutyCycle(self.vel2cycle(vel_l,'l'))
 
