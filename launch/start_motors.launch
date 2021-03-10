@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+  <!-- Start Motors -->
+  <node pkg="grmi_suitcase" type="motors_control.py" name="motors_control" output="screen"/>
+
+</launch>
