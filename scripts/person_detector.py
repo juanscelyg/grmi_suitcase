@@ -43,6 +43,8 @@ class GRMI_detector():
             print(e)
 
     def detect(self, event):
+        error_angle = 0.0
+        error_dist = 0.0
         _cv_image = self.cv_image
         (H, W) = _cv_image.shape[:2]
         ln = self.net.getLayerNames()
@@ -83,9 +85,6 @@ class GRMI_detector():
                 text = "{} {}: {:.2f}{}".format(self.LABELS[classIDs[i]],i, confidences[i]*100, '%')
                 cv2.putText(_cv_image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.9, self.color, 2)
                 rospy.loginfo("Detected: "+text)
-        else:
-            error_angle = 0.0
-            error_dist = 0.0
         try:
             self.pub_error(error_dist, error_angle)
             self.image_pub.publish(self.bridge.cv2_to_imgmsg(_cv_image, "bgr8"))

@@ -2,9 +2,9 @@
 
 <launch>
   <!-- Parameters -->
-  <arg name="power_gain" default="0.1"/>
-  <arg name="speed_gain" default="0.1"/>
-  <arg name="omega_gain" default="0.1"/>
+  <arg name="power_gain" default="0.5"/>
+  <arg name="speed_gain" default="0.5"/>
+  <arg name="omega_gain" default="0.5"/>
 
   <!-- Start Motors -->
   <node pkg="grmi_suitcase" type="motors_control.py" name="motors_control" output="screen">
