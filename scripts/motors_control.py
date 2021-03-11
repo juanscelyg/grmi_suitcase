@@ -21,7 +21,7 @@ class GRMI_motors():
         # GPIO Config
         self.pin_motor_r = 12 #Board32
         self.pin_motor_l = 13 #Board33
-        self.pwm_frequency = 500
+        self.pwm_frequency = 50
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin_motor_r, GPIO.OUT)
         GPIO.setup(self.pin_motor_l, GPIO.OUT)
@@ -36,13 +36,13 @@ class GRMI_motors():
         self.error_sub = rospy.Subscriber("/error_pose", Pose2D, self.callback)
 
     def vel2cycle(self,vel,mode):
-        slope = 50.0
+        slope = 2.5
         if mode=='l':
-            slope = -50.0
-        offset = 50.0
+            slope = -2.5
+        offset = 7.5
         if abs(vel)>1:
             vel=abs(vel)/vel
-        return int(self.power_gain*(slope*vel+offset))
+        return int(slope*self.power_gain*vel+offset)
 
 
     def callback(self, msg_error):
