@@ -27,8 +27,8 @@ class GRMI_visual():
         omg = self.omega_gain*error_omega
         msg_vel = TwistStamped()
         msg_vel.header.stamp = rospy.Time.now()
-        msg_vel.twist.linear.x = vel
-        msg_vel.twist.angular.z = omg
+        msg_vel.twist.linear.x = self.power_gain*vel
+        msg_vel.twist.angular.z = self.power_gain*omg
         self.vel_pub.publish(msg_vel)
 
 
@@ -40,5 +40,4 @@ if __name__ == '__main__':
         rospy.spin()
     except rospy.ROSInterruptException:
         print('caught exception')
-    GPIO.cleanup()
     print('exiting')
