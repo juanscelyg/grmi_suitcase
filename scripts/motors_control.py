@@ -27,14 +27,6 @@ class GRMI_motors():
         self.cmdvel_sub = rospy.Subscriber("/cmd_vel", Twist, self.callback)
         self.motor_pub = rospy.Publisher("/vel_motors",  Vector3, queue_size=1)
 
-    def vel2cycle(self,vel,mode):
-        slope = 1.0
-        if mode=='l':
-            vel = -vel
-        offset = 0.0
-        if abs(vel)>1:
-            vel=abs(vel)/vel
-        return (slope*vel+offset)
 
     def pub_motors(self, event):
         pub_motors_msg = Vector3()

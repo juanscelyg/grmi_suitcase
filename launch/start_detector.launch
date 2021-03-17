@@ -20,7 +20,7 @@
     <!-- Parameters -->
     <arg name="power_gain"           value="0.25" />
     <arg name="speed_gain"           value="0.5" />
-    <arg name="omega_gain"           value="0.1" />
+    <arg name="omega_gain"           value="0.5" />
     <node pkg="grmi_suitcase" type="visual_control.py" name="visual_control" output="screen">
       <param name="power_gain"           value="$(arg power_gain)" />
       <param name="speed_gain"           value="$(arg speed_gain)" />
