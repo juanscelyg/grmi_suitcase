@@ -46,7 +46,7 @@ class GRMI_motors():
     def callback(self, msg_vel):
         self.speed = msg_vel.linear.x
         self.omega = msg_vel.angular.z
-        vel = np.matrix([self.speed],[self.omega])
+        vel = np.matrix([[self.speed],[self.omega]])
         self.vel_motors = np.matmul(self.jac_inv, vel)
 
 if __name__ == '__main__':
