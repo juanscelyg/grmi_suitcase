@@ -7,10 +7,9 @@ import time
 import cv2
 import os
 import sys
-import message_filters
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import Pose2D
+from geometry_msgs.msg import PointStamped
 
 class GRMI_detector():
     def __init__(self):
@@ -34,7 +33,7 @@ class GRMI_detector():
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("camera/rgb/image_raw",Image,self.callback)
         self.image_pub = rospy.Publisher("/detected_image",Image, queue_size=1)
-        self.error_pub = rospy.Publisher("/error_pose",Pose2D, queue_size=1)
+        self.error_pub = rospy.Publisher("/error_pose",PointStamped, queue_size=1)
 
     def callback(self, msg_image):
         try:
@@ -93,9 +92,10 @@ class GRMI_detector():
 
 
     def pub_error(self, error_distance, error_angle):
-        pose_msg = Pose2D()
-        pose_msg.x = error_distance
-        pose_msg.theta = error_angle
+        pose_msg = PointStamped()
+        pose_msg.header.stamp = rospy.Time.now()
+        pose_msg.point.x = error_distance
+        pose_msg.point.z = error_angle
         self.error_pub.publish(pose_msg)
 
 if __name__ == '__main__':

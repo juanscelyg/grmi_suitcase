@@ -23,6 +23,8 @@ generate_messages(
 catkin_package(INCLUDE_DIRS DEPENDS OpenCV)
 
 catkin_install_python(PROGRAMS  scripts/person_detector.py
+                                scripts/motors_control.py
+                                scripts/visual_control.py
                         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY launch config cfg

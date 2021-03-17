@@ -6,57 +6,54 @@ import logging
 import time
 import os
 import sys
-from geometry_msgs.msg import Pose2D
-import RPi.GPIO as GPIO
+from geometry_msgs.msg import TwistStamped, Vector3
+
 
 class GRMI_motors():
     def __init__(self):
+        # ROS TIMER
+        self.mytime = 0.35
+
         # MODEL
-        self.power_gain = rospy.get_param('/motors_control/power_gain')
-        self.speed_gain = rospy.get_param('/motors_control/speed_gain')
-        self.omega_gain = rospy.get_param('/motors_control/omega_gain')
+        self.l = 0.15
+        self.r = 0.035
+        self.jac_inv = np.matrix([[1/self.r, self.l/(2*self.r)],
+        [1/self.r, -self.l/(2*self.r)]]);
         self.speed = 0.0
         self.omega = 0.0
-
-        # GPIO Config
-        self.pin_motor_r = 12 #Board32
-        self.pin_motor_l = 13 #Board33
-        self.pwm_frequency = 50
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.pin_motor_r, GPIO.OUT)
-        GPIO.setup(self.pin_motor_l, GPIO.OUT)
-        self.pwm_motor_r = GPIO.PWM(self.pin_motor_r, self.pwm_frequency)
-        self.pwm_motor_l = GPIO.PWM(self.pin_motor_l, self.pwm_frequency)
-        self.pwm_motor_r.start(self.vel2cycle(0,'r'))
-        self.pwm_motor_l.start(self.vel2cycle(0,'l'))
-        rospy.loginfo(" Init Motors")
-        time.sleep(1)
+        self.vel_motors = np.zeros(shape=(2,1))
 
         # ROS INFRAESTRUCRE
-        self.error_sub = rospy.Subscriber("/error_pose", Pose2D, self.callback)
+        self.cmdvel_sub = rospy.Subscriber("/cmd_vel", TwistStamped, self.callback)
+        self.motor_pub = rospy.Publisher("/vel_motors",  Vector3, queue=1)
 
     def vel2cycle(self,vel,mode):
-        slope = 2.5
+        slope = 1.0
         if mode=='l':
-            slope = -2.5
-        offset = 7.5
+            vel = -vel
+        offset = 0.0
         if abs(vel)>1:
             vel=abs(vel)/vel
-        return int(slope*self.power_gain*vel+offset)
+        return (slope*vel+offset)
+
+    def pub_motors(self):
+        pub_motors_msg = Vector3()
+        pub_motors_msg.point.x = self.vel_motors[0,1]
+        pub_motors_msg.point.y = self.vel_motors[1,1]
+        self.motor_pub.publish(pub_motors_msg)
 
 
-    def callback(self, msg_error):
-        vel_r = self.speed_gain*msg_error.x + self.omega_gain*msg_error.theta
-        vel_l = self.speed_gain*msg_error.x - self.omega_gain*msg_error.theta
-        rospy.loginfo("vel_l: {:.4f} vel_r:{:.4f}".format(vel_l, vel_r))
-        self.pwm_motor_r.ChangeDutyCycle(self.vel2cycle(vel_r,'r'))
-        self.pwm_motor_l.ChangeDutyCycle(self.vel2cycle(vel_l,'l'))
-
+    def callback(self, msg_vel):
+        self.speed = msg_vel.Twist.linear.x
+        self.omega = msg_vel.Twist.angular.z
+        vel = np.matrix([self.speed],[self.omega])
+        self.vel_motors = np.matmul(self.jac_inv, vel)
 
 if __name__ == '__main__':
     rospy.init_node('motors_control')
     try:
         node = GRMI_motors()
+        rospy.Timer(rospy.Duration(node.mytime), node.pub_motors)
         rate = rospy.Rate(10)
         rospy.spin()
     except rospy.ROSInterruptException:
