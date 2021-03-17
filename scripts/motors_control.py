@@ -6,7 +6,7 @@ import logging
 import time
 import os
 import sys
-from geometry_msgs.msg import TwistStamped, Vector3
+from geometry_msgs.msg import Twist, Vector3
 
 
 class GRMI_motors():
@@ -24,7 +24,7 @@ class GRMI_motors():
         self.vel_motors = np.zeros(shape=(2,1))
 
         # ROS INFRAESTRUCRE
-        self.cmdvel_sub = rospy.Subscriber("/cmd_vel", TwistStamped, self.callback)
+        self.cmdvel_sub = rospy.Subscriber("/cmd_vel", Twist, self.callback)
         self.motor_pub = rospy.Publisher("/vel_motors",  Vector3, queue_size=1)
 
     def vel2cycle(self,vel,mode):
@@ -36,16 +36,16 @@ class GRMI_motors():
             vel=abs(vel)/vel
         return (slope*vel+offset)
 
-    def pub_motors(self):
+    def pub_motors(self, event):
         pub_motors_msg = Vector3()
-        pub_motors_msg.point.x = self.vel_motors[0,1]
-        pub_motors_msg.point.y = self.vel_motors[1,1]
+        pub_motors_msg.x = self.vel_motors[0,0]
+        pub_motors_msg.y = self.vel_motors[1,0]
         self.motor_pub.publish(pub_motors_msg)
 
 
     def callback(self, msg_vel):
-        self.speed = msg_vel.Twist.linear.x
-        self.omega = msg_vel.Twist.angular.z
+        self.speed = msg_vel.linear.x
+        self.omega = msg_vel.angular.z
         vel = np.matrix([self.speed],[self.omega])
         self.vel_motors = np.matmul(self.jac_inv, vel)
 

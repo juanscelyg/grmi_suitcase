@@ -6,7 +6,7 @@ import logging
 import time
 import os
 import sys
-from geometry_msgs.msg import PointStamped, TwistStamped
+from geometry_msgs.msg import PointStamped, Twist
 
 class GRMI_visual():
     def __init__(self):
@@ -18,17 +18,16 @@ class GRMI_visual():
 
         # ROS INFRAESTRUCRE
         self.error_sub = rospy.Subscriber("/error_pose", PointStamped, self.callback)
-        self.vel_pub = rospy.Publisher("/cmd_vel",  TwistStamped, queue_size=1)
+        self.vel_pub = rospy.Publisher("/cmd_vel",  Twist, queue_size=1)
 
     def callback(self, msg_error):
         error_speed = msg_error.point.x
         error_omega = msg_error.point.z
         vel = self.speed_gain*error_speed
         omg = self.omega_gain*error_omega
-        msg_vel = TwistStamped()
-        msg_vel.header.stamp = rospy.Time.now()
-        msg_vel.twist.linear.x = self.power_gain*vel
-        msg_vel.twist.angular.z = self.power_gain*omg
+        msg_vel = Twist()
+        msg_vel.linear.x = self.power_gain*vel
+        msg_vel.angular.z = self.power_gain*omg
         self.vel_pub.publish(msg_vel)
 
 
