@@ -25,7 +25,7 @@ class GRMI_motors():
 
         # ROS INFRAESTRUCRE
         self.cmdvel_sub = rospy.Subscriber("/cmd_vel", TwistStamped, self.callback)
-        self.motor_pub = rospy.Publisher("/vel_motors",  Vector3, queue=1)
+        self.motor_pub = rospy.Publisher("/vel_motors",  Vector3, queue_size=1)
 
     def vel2cycle(self,vel,mode):
         slope = 1.0

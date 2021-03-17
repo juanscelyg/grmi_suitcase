@@ -18,7 +18,7 @@ class GRMI_visual():
 
         # ROS INFRAESTRUCRE
         self.error_sub = rospy.Subscriber("/error_pose", PointStamped, self.callback)
-        self.vel_pub = rospy.Publisher("/cmd_vel",  TwistStamped, queue=1)
+        self.vel_pub = rospy.Publisher("/cmd_vel",  TwistStamped, queue_size=1)
 
     def callback(self, msg_error):
         error_speed = msg_error.point.x
