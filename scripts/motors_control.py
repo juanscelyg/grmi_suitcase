@@ -17,8 +17,8 @@ class GRMI_motors():
         # MODEL
         self.l = 0.15
         self.r = 0.035
-        self.jac_inv = np.matrix([[1/self.r, self.l/(2*self.r)],
-        [1/self.r, -self.l/(2*self.r)]]);
+        self.jac_inv = np.matrix([[1/self.r, self.l/(self.r), 0.0],
+        [1/self.r, 0.0 ,self.l/(self.r)]]);
         self.speed = 0.0
         self.omega = 0.0
         self.vel_motors = np.zeros(shape=(2,1))
@@ -26,7 +26,6 @@ class GRMI_motors():
         # ROS INFRAESTRUCRE
         self.cmdvel_sub = rospy.Subscriber("/cmd_vel", Twist, self.callback)
         self.motor_pub = rospy.Publisher("/vel_motors",  Vector3, queue_size=1)
-
 
     def pub_motors(self, event):
         pub_motors_msg = Vector3()
@@ -38,7 +37,10 @@ class GRMI_motors():
     def callback(self, msg_vel):
         self.speed = msg_vel.linear.x
         self.omega = msg_vel.angular.z
-        vel = np.matrix([[self.speed],[self.omega]])
+        if self.omega>0:
+            vel = np.matrix([[self.speed],[self.omega],[0]])
+        else:
+            vel = np.matrix([[self.speed],[0],[self.omega]])
         self.vel_motors = np.matmul(self.jac_inv, vel)
 
 if __name__ == '__main__':
