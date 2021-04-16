@@ -40,7 +40,7 @@ class GRMI_motors():
         if self.omega>0:
             vel = np.matrix([[self.speed],[self.omega],[0]])
         else:
-            vel = np.matrix([[self.speed],[0],[self.omega]])
+            vel = np.matrix([[self.speed],[0],[abs(self.omega)]])
         self.vel_motors = np.matmul(self.jac_inv, vel)
 
 if __name__ == '__main__':
